@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.usage.ExternalStorageStats;
@@ -20,6 +21,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     GridView gridView;
     ImageView imageView;
     ArrayList<File> list;
-    private static final int EXTERNAL_STORAGE=50;
+    private static final int EXTERNAL_STORAGE=3;
 
    /** @Override
    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -56,11 +58,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, EXTERNAL_STORAGE);
+
         gridView = (GridView) findViewById(R.id.image_grid);
         list = imageReader(Environment.getExternalStorageDirectory());
         gridView.setAdapter(new GridAdapter());
-      //  ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE});
-       // ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, EXTERNAL_STORAGE);
+        if(ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE)){
+                Toast.makeText(getApplicationContext(),"please grant the storage permission",Toast.LENGTH_SHORT).show();
+            }
+            else {
+
+            }
+        }else Toast.makeText(getApplicationContext(),"storage permission granted",Toast.LENGTH_SHORT).show();
+
+
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
